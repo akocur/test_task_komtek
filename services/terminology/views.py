@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from services.terminology.models import Guide, GuideItem
+from services.terminology.models import Guide, GuideVersion
 from services.terminology.serializers import (
     GuideItemSerializer,
     GuideSerializer,
@@ -35,7 +35,7 @@ class GuideList(generics.ListAPIView):
         whose start_date is less than or equal to start_date_lte will be
         selected.
         """
-        queryset = Guide.objects.all()
+        queryset = GuideVersion.objects.all()
         start_date_lte = self.request.query_params.get('start_date_lte')
         if start_date_lte:
             try:
@@ -54,21 +54,18 @@ class GuideItemList(generics.ListAPIView):
     serializer_class = GuideItemSerializer
 
     def get_queryset(self):  # noqa: WPS615
-        """Get queryset.
-
-        If 'version' and 'guide_name' is specified in the get method, then
-        queryset is change.
-        Version can be either 'current' or specific.
-        """
-        queryset = GuideItem.objects.all()
-        guide_name = self.request.query_params.get('guide_name')
+        """Get queryset."""
+        pk = self.kwargs.get('pk')
+        guide = Guide.objects.get(id=pk)
         version = self.request.query_params.get('version')
-        if version and guide_name:
-            if version == 'current':
-                return queryset.filter(
-                    guide=Guide.current_version(guide_name),
-                )
-            return queryset.filter(
-                guide__version=version, guide__name=guide_name,
+        try:
+            if version:
+                guide_items = guide.get_guide_items(version)
+            else:
+                guide_items = guide.get_guide_items()
+        except GuideVersion.DoesNotExist:
+            raise serializers.ValidationError(
+                {'version': f'No data for the {version} version'},
             )
-        return queryset
+
+        return guide_items
