@@ -1,4 +1,6 @@
-## The "Guide" entity contains the following attributes:
+## The Terminology service operates with the entities listed below:
+
+#### 1. The "Guide" entity contains the following attributes:
 
 - guide identifier (global and independent of the version)
 - name
@@ -7,7 +9,7 @@
 - version (type: string, cannot be empty, unique within one directory)
 - the start date of the directory of this version
 
-## The "Directory Element" entity
+#### 2. The "Directory Element" entity
 
 - id
 - guide id
@@ -16,12 +18,12 @@
 
 ## The API provides the following methods
 
-- getting a list of guides.
-- getting a list of guides relevant on the specified date
-- getting the elements of the specified guide of the current version
-- validation of elements of a given guide of the current version
-- getting the elements of the specified guide of the specified version
-- validation of an element of a given guide according to the specified version
+- [getting a list of guides](https://github.com/akocur/test_task_komtek#getting-a-list-of-guides)
+- [getting a list of guides relevant on the specified date](https://github.com/akocur/test_task_komtek#getting-a-list-of-guides-relevant-on-the-specified-date)
+- [getting the elements of the specified guide of the current version](https://github.com/akocur/test_task_komtek#getting-the-elements-of-the-specified-guide-of-the-current-version)
+- [getting the elements of the specified guide of the specified version](https://github.com/akocur/test_task_komtek#getting-the-elements-of-the-specified-guide-of-the-specified-version)
+- [validation of elements of a given guide of the current version](https://github.com/akocur/test_task_komtek#validation-of-elements-of-a-given-guide-of-the-current-version)
+- [validation of an element of a given guide according to the specified version](https://github.com/akocur/test_task_komtek#validation-of-an-element-of-a-given-guide-according-to-the-specified-version)
   
 ## Getting a list of guides
 
