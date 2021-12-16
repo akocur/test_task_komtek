@@ -21,9 +21,10 @@ class Guide(models.Model):
 
         If version is None then return guide items of the current version.
         """
-        guid_version = self.versions.get(version=version)
         if version is None:
             guid_version = self.current_version
+        else:
+            guid_version = self.versions.get(version=version)
         return guid_version.guide_items.all()
 
     def __str__(self):

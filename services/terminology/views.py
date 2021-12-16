@@ -58,7 +58,11 @@ class GuideItemList(generics.ListAPIView):
     def get_queryset(self):  # noqa: WPS615
         """Get queryset."""
         pk = self.kwargs.get('pk')
-        guide = Guide.objects.get(id=pk)
+        try:
+            guide = Guide.objects.get(id=pk)
+        except Guide.DoesNotExist:
+            raise serializers.ValidationError({pk: 'guide_id does not exist'})
+
         version = self.request.query_params.get('version')
         guide_id_field = models.Value(
             pk, output_field=models.IntegerField(),
@@ -105,6 +109,6 @@ class GuideItemValidate(APIView):
         ))
 
         if errors:
-            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(errors)
 
         return Response({'all': True})
