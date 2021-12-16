@@ -86,7 +86,7 @@ class GuideItemValidate(APIView):
         """Validate data."""
         try:
             guide = Guide.objects.get(pk=pk)
-        except GuideVersion.DoesNotExist:
+        except Guide.DoesNotExist:
             raise serializers.ValidationError({'guide_id': 'does not exist.'})
 
         serializer = GuideItemSerializer(many=True, data=request.data)
