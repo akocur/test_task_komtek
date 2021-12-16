@@ -1,6 +1,11 @@
 from rest_framework.urls import path
 
-from services.terminology.views import GuideItemList, GuideList, api_root
+from services.terminology.views import (
+    GuideItemList,
+    GuideItemValidate,
+    GuideList,
+    api_root,
+)
 
 urlpatterns = [
     path('', api_root),
@@ -9,5 +14,10 @@ urlpatterns = [
         'guides/<int:pk>/guide-items/data',
         GuideItemList.as_view(),
         name='guide-item-list',
+    ),
+    path(
+        'guides/<int:pk>/guide-items/validate',
+        GuideItemValidate.as_view(),
+        name='guide-item-validate',
     ),
 ]

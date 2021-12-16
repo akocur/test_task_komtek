@@ -1,11 +1,13 @@
 import datetime
 
-from rest_framework import generics, serializers
+from django.db import models
+from rest_framework import generics, serializers, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.views import APIView
 
-from services.terminology.models import Guide, GuideVersion
+from services.terminology.models import Guide, GuideItem, GuideVersion
 from services.terminology.serializers import (
     GuideItemSerializer,
     GuideSerializer,
@@ -58,14 +60,51 @@ class GuideItemList(generics.ListAPIView):
         pk = self.kwargs.get('pk')
         guide = Guide.objects.get(id=pk)
         version = self.request.query_params.get('version')
+        guide_id_field = models.Value(
+            pk, output_field=models.IntegerField(),
+        )
         try:
-            if version:
-                guide_items = guide.get_guide_items(version)
-            else:
-                guide_items = guide.get_guide_items()
+            guide_items = guide.get_guide_items(version).annotate(
+                guide_id=guide_id_field,
+            )
         except GuideVersion.DoesNotExist:
             raise serializers.ValidationError(
                 {'version': f'No data for the {version} version'},
             )
 
         return guide_items
+
+
+class GuideItemValidate(APIView):
+    """Validate guide item."""
+
+    def post(self, request, pk, format=None):  # noqa: WPS125
+        """Validate data."""
+        try:
+            guide = Guide.objects.get(pk=pk)
+        except GuideVersion.DoesNotExist:
+            raise serializers.ValidationError({'guide_id': 'does not exist.'})
+
+        serializer = GuideItemSerializer(many=True, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        version = self.request.query_params.get('version')
+        guide_items_of_version = guide.get_guide_items(version)
+
+        guide_item_ids = [
+            guide_item['id'] for guide_item in serializer.validated_data
+        ]
+        expected_guide_items = GuideItem.objects.filter(id__in=guide_item_ids)
+        invalid_guide_items = expected_guide_items.difference(
+            guide_items_of_version,
+        ).order_by('id')
+
+        errors = list(map(
+            lambda invalid_guide_item: {invalid_guide_item.id: False},
+            invalid_guide_items,
+        ))
+
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'all': True})

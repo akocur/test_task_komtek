@@ -10,7 +10,7 @@ class GuideSerializer(serializers.ModelSerializer):
         read_only=True, label='ID', source='guide.id',
     )
     name = serializers.CharField(
-        allow_blank=True, max_length=200, source='guide.name',
+        allow_blank=True, max_length=200, source='guide.name',  # noqa: WPS432
     )
     short_name = serializers.CharField(
         allow_blank=True, max_length=100, source='guide.short_name',
@@ -29,12 +29,31 @@ class GuideSerializer(serializers.ModelSerializer):
 class GuideItemSerializer(serializers.ModelSerializer):
     """Serializer of GuideItem."""
 
-    guide = serializers.IntegerField(
-        read_only=True, label='ID',
-    )
+    id = serializers.IntegerField()
+    guide_id = serializers.IntegerField()
 
     class Meta(object):
         model = GuideItem
         fields = [
-            'id', 'guide', 'code', 'value',
+            'id', 'guide_id', 'code', 'value',
         ]
+
+    def validate_id(self, value):  # noqa: WPS110
+        """Raise ValidationError if GuideItem does not exist."""
+        try:
+            GuideItem.objects.get(pk=value)
+        except GuideItem.DoesNotExist:
+            raise serializers.ValidationError({value: 'does not exist'})
+        return value
+
+    def validate(self, data):  # noqa: WPS110
+        """Validate code, value."""
+        guide_item = GuideItem.objects.get(pk=data['id'])
+        errors = {}
+        fields = ['code', 'value']
+        for field in fields:
+            if getattr(guide_item, field) != data[field]:
+                errors[field] = 'the value is different'
+        if errors:
+            raise serializers.ValidationError(errors)
+        return data

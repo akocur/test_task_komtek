@@ -24,10 +24,7 @@ class Guide(models.Model):
         guid_version = self.versions.get(version=version)
         if version is None:
             guid_version = self.current_version
-        guide_field = models.Value(
-            self.id, output_field=models.IntegerField(),
-        )
-        return guid_version.guide_items.annotate(guide=guide_field)
+        return guid_version.guide_items.all()
 
     def __str__(self):
         """Return  instanse representation."""

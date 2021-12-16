@@ -1,7 +1,8 @@
-from services.terminology.models import Guide, GuideVersion, GuideItem
+from services.terminology.models import Guide, GuideItem
 
 
 def populate_db():
+    """Populate db with test data."""
     specialties = Guide.objects.create(name='specialties')
     facilities = Guide.objects.create(name='facilities')
 
