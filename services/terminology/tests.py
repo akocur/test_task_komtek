@@ -104,3 +104,9 @@ class GuideItemModelTests(TestCase):
         raise_text = 'constraint "non_empty_code"'
         with self.assertRaisesMessage(IntegrityError, raise_text):
             GuideItem.objects.create(code='', value='value1')
+
+    def test_value_cannot_be_empty(self):
+        """Value cannot be empty."""
+        raise_text = 'constraint "non_empty_value"'
+        with self.assertRaisesMessage(IntegrityError, raise_text):
+            GuideItem.objects.create(code='1', value='')

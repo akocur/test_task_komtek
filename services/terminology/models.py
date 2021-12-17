@@ -48,6 +48,9 @@ class GuideItem(models.Model):
             models.CheckConstraint(
                 check=~models.Q(code=''), name='non_empty_code',
             ),
+            models.CheckConstraint(
+                check=~models.Q(value=''), name='non_empty_value',
+            ),
         ]
 
     def __str__(self):
