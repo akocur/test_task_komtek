@@ -58,6 +58,11 @@ class GuideVersion(models.Model):
 
     class Meta(object):
         unique_together = ['guide', 'version']
+        constraints = [
+            models.CheckConstraint(
+                check=~models.Q(version=''), name='non_empty_version',
+            ),
+        ]
 
     def __str__(self):
         """Return  instanse representation."""

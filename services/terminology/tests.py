@@ -6,13 +6,15 @@ from django.utils import timezone
 
 from services.terminology.models import Guide, GuideItem
 
+DEFAULT_GUIDE_NAME = 'guide1'
+
 
 class GuideModelTests(TestCase):
     """Test Guide model."""
 
     def setUp(self):
         """Set up."""
-        Guide.objects.create(name='guide1')
+        Guide.objects.create(name=DEFAULT_GUIDE_NAME)
         GuideItem.objects.create(code=1, value='surgeon')
         GuideItem.objects.create(code=2, value='therapist')
         GuideItem.objects.create(code=3, value='otolaryngologist')
@@ -20,7 +22,7 @@ class GuideModelTests(TestCase):
 
     def test_current_version(self):
         """Test current version."""
-        guide = Guide.objects.get(name='guide1')
+        guide = Guide.objects.get(name=DEFAULT_GUIDE_NAME)
         self.assertEqual(guide.current_version, None)
 
         last_version = self._create_last_version(guide)
@@ -38,7 +40,7 @@ class GuideModelTests(TestCase):
 
     def test_get_guide_items(self):
         """Test get_guide_items."""
-        guide = Guide.objects.get(name='guide1')
+        guide = Guide.objects.get(name=DEFAULT_GUIDE_NAME)
         self.assertQuerysetEqual(guide.get_guide_items(), [])
         self.assertQuerysetEqual(guide.get_guide_items('last'), [])
 
@@ -75,13 +77,20 @@ class GuideModelTests(TestCase):
         return self._create_version(guide, 'future', future_date)
 
 
-class GuideVersionTests(TestCase):
+class GuideVersionModelTests(TestCase):
     """Test GuideVersion model."""
 
     def test_unique_version_for_specific_guide(self):
         """Identical versions cannot be created for a particular guide."""
-        guide = Guide.objects.create(name='guide1')
+        guide = Guide.objects.create(name=DEFAULT_GUIDE_NAME)
         guide.versions.create(version='1', start_date='2021-12-01')
         raise_text = 'duplicate key value violates unique constraint'
         with self.assertRaisesMessage(IntegrityError, raise_text):
             guide.versions.create(version='1', start_date='2021-12-02')
+
+    def test_version_cannot_be_empty(self):
+        """Version cannot be empty."""
+        guide = Guide.objects.create(name=DEFAULT_GUIDE_NAME)
+        raise_text = 'constraint "non_empty_version"'
+        with self.assertRaisesMessage(IntegrityError, raise_text):
+            guide.versions.create(version='', start_date='2021-12-01')
