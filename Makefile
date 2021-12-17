@@ -4,6 +4,8 @@ install:
 	poetry install
 test:
 	poetry run pytest -vv
+test-django:
+	@$(MANAGE) test
 test-coverage:
 	poetry run pytest --cov=terminology
 code-climate:
