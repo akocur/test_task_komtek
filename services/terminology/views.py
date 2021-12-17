@@ -109,6 +109,6 @@ class GuideItemValidate(APIView):
         ))
 
         if errors:
-            return Response(errors)
+            return Response(errors, status=status.HTTP_200_OK)
 
-        return Response({'all': True})
+        return Response({'all': True}, status=status.HTTP_200_OK)
