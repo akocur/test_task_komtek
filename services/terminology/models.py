@@ -23,8 +23,13 @@ class Guide(models.Model):
         """
         if version is None:
             guid_version = self.current_version
+            if guid_version is None:
+                return []
         else:
-            guid_version = self.versions.get(version=version)
+            try:
+                guid_version = self.versions.get(version=version)
+            except GuideVersion.DoesNotExist:
+                return []
         return guid_version.guide_items.all()
 
     def __str__(self):
