@@ -94,3 +94,13 @@ class GuideVersionModelTests(TestCase):
         raise_text = 'constraint "non_empty_version"'
         with self.assertRaisesMessage(IntegrityError, raise_text):
             guide.versions.create(version='', start_date='2021-12-01')
+
+
+class GuideItemModelTests(TestCase):
+    """Test GuideItem model."""
+
+    def test_code_cannot_be_empty(self):
+        """Code cannot be empty."""
+        raise_text = 'constraint "non_empty_code"'
+        with self.assertRaisesMessage(IntegrityError, raise_text):
+            GuideItem.objects.create(code='', value='value1')

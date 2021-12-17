@@ -43,6 +43,13 @@ class GuideItem(models.Model):
     code = models.CharField(max_length=100)  # noqa: WPS432
     value = models.CharField(max_length=200)  # noqa: WPS432, WPS110
 
+    class Meta(object):
+        constraints = [
+            models.CheckConstraint(
+                check=~models.Q(code=''), name='non_empty_code',
+            ),
+        ]
+
     def __str__(self):
         """Return  instanse representation."""
         return f'{self.id}, {self.value}'
