@@ -12,8 +12,12 @@ class Guide(models.Model):
     @property
     def current_version(self):
         """Return current version."""
+        return self.get_version_on_date(timezone.now().date())
+
+    def get_version_on_date(self, date):
+        """Return guide version on the date."""
         return self.versions.filter(
-            start_date__lte=timezone.now().date(),
+            start_date__lte=date,
         ).order_by('-start_date').first()
 
     def get_guide_items(self, version=None):

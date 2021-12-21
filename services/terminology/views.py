@@ -46,7 +46,9 @@ class GuideList(generics.ListAPIView):
                 raise serializers.ValidationError(
                     {'start_date_lte': 'Please enter a valid start_date_lte'},
                 )
-            return queryset.filter(start_date__lte=date)
+            return queryset.filter(
+                start_date__lte=date,
+            ).order_by('guide_id', '-start_date').distinct('guide_id')
         return queryset
 
 

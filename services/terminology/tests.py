@@ -2,7 +2,10 @@ import datetime
 
 from django.db.utils import IntegrityError
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 from services.terminology.models import Guide, GuideItem
 
@@ -11,6 +14,8 @@ class GuideMixin(object):
     """Provide methods for working with guide."""
 
     default_guide_name = 'guide1'
+    default_guide_short_name = 'g1'
+    default_guide_description = 'description1'
 
     def create_guide(self, name, short_name='', description=''):
         """Create guide."""
@@ -41,23 +46,30 @@ class GuideVersionMixin(object):
             guide_version.guide_items.add(guide_items)
         return guide_version
 
-    def create_last_version(self, guide):
-        """Create last guide version."""
-        now = timezone.now()
-        last_date = now - datetime.timedelta(days=30)  # noqa: WPS432
-        return self.create_version(guide, self.last_version_name, last_date)
-
-    def create_current_version(self, guide):
+    def create_last_version(self, guide, guide_items=None):
         """Create last guide version."""
         today = timezone.now().date()
-        return self.create_version(guide, self.current_version_name, today)
-
-    def create_future_version(self, guide):
-        """Create last guide version."""
-        now = timezone.now()
-        future_date = now + datetime.timedelta(days=30)  # noqa: WPS432
+        last_date = today - datetime.timedelta(days=30)  # noqa: WPS432
         return self.create_version(
-            guide, self.future_version_name, future_date,
+            guide, self.last_version_name, last_date, guide_items=guide_items,
+        )
+
+    def create_current_version(self, guide, guide_items=None):
+        """Create last guide version."""
+        today = timezone.now().date()
+        return self.create_version(
+            guide, self.current_version_name, today, guide_items=guide_items,
+        )
+
+    def create_future_version(self, guide, guide_items=None):
+        """Create last guide version."""
+        today = timezone.now().date()
+        future_date = today + datetime.timedelta(days=30)  # noqa: WPS432
+        return self.create_version(
+            guide,
+            self.future_version_name,
+            future_date,
+            guide_items=guide_items,
         )
 
 
@@ -155,3 +167,113 @@ class GuideItemModelTests(GuideItemMixin, TestCase):
         raise_text = 'constraint "non_empty_value"'
         with self.assertRaisesMessage(IntegrityError, raise_text):
             self.create_guide_item(code='1', value='')
+
+
+class GuideListApiViewTests(GuideMixin, GuideVersionMixin, APITestCase):
+    """Test GuideList view."""
+
+    def test_get_empty_guide_list(self):
+        """Test getting empty guide list."""
+        url = reverse('guide-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, [])
+
+    def test_get_guide_list(self):
+        """Test getting guide list."""
+        guide1 = self.create_guide(
+            self.default_guide_name,
+            self.default_guide_short_name,
+            self.default_guide_description,
+        )
+        last_version_g1 = self.create_last_version(guide1)
+        current_version_g1 = self.create_current_version(guide1)
+        future_version_g1 = self.create_future_version(guide1)
+        guide2 = self.create_guide('guide2')
+        current_version_g2 = self.create_current_version(guide2)
+        url = reverse('guide-list')
+        response = self.client.get(url, format='json')
+        expected_data = [
+            {
+                'id': guide1.id,
+                'name': self.default_guide_name,
+                'short_name': self.default_guide_short_name,
+                'description': self.default_guide_description,
+                'version': self.last_version_name,
+                'start_date': last_version_g1.start_date.isoformat(),
+            },
+            {
+                'id': guide1.id,
+                'name': self.default_guide_name,
+                'short_name': self.default_guide_short_name,
+                'description': self.default_guide_description,
+                'version': self.current_version_name,
+                'start_date': current_version_g1.start_date.isoformat(),
+            },
+            {
+                'id': guide1.id,
+                'name': self.default_guide_name,
+                'short_name': self.default_guide_short_name,
+                'description': self.default_guide_description,
+                'version': self.future_version_name,
+                'start_date': future_version_g1.start_date.isoformat(),
+            },
+            {
+                'id': guide2.id,
+                'name': 'guide2',
+                'short_name': '',
+                'description': '',
+                'version': self.current_version_name,
+                'start_date': current_version_g2.start_date.isoformat(),
+            },
+        ]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected_data)
+
+    def test_get_guide_list_on_actual_date(self):
+        """Test getting guide list on the actual date."""
+        guide1 = self.create_guide(
+            self.default_guide_name,
+            self.default_guide_short_name,
+            self.default_guide_description,
+        )
+        self.create_last_version(guide1)
+        current_version_g1 = self.create_current_version(guide1)
+        self.create_future_version(guide1)
+        guide2 = self.create_guide('guide2')
+        current_version_g2 = self.create_current_version(guide2)
+        url = reverse('guide-list')
+        today = timezone.now().date()
+        query_string = {'start_date_lte': today.isoformat()}
+        response = self.client.get(url, query_string, format='json')
+        expected_data = [
+            {
+                'id': guide1.id,
+                'name': self.default_guide_name,
+                'short_name': self.default_guide_short_name,
+                'description': self.default_guide_description,
+                'version': self.current_version_name,
+                'start_date': current_version_g1.start_date.isoformat(),
+            },
+            {
+                'id': guide2.id,
+                'name': 'guide2',
+                'short_name': '',
+                'description': '',
+                'version': self.current_version_name,
+                'start_date': current_version_g2.start_date.isoformat(),
+            },
+        ]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected_data)
+
+    def test_start_date_lte_is_valid(self):
+        """Test that start_date_lte is valid."""
+        url = reverse('guide-list')
+        query_string = {'start_date_lte': 'invalid'}
+        response = self.client.get(url, query_string, format='json')
+        expected_data = {
+            'start_date_lte': 'Please enter a valid start_date_lte',
+        }
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.json(), expected_data)
