@@ -131,3 +131,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # print SQL queries in shell_plus
 SHELL_PLUS_PRINT_SQL = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+}
