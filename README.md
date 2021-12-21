@@ -104,7 +104,7 @@
 
 #### Request
 
-    GET /terminology/guides/data?start_date_lte=2021-03-01 HTTP/1.1
+    GET /terminology/guides/data?start_date_lte=2021-06-01 HTTP/1.1
 
 #### Response
 
@@ -119,8 +119,16 @@
             "name": "specialties",
             "short_name": "",
             "description": "",
-            "version": "1",
-            "start_date": "2021-01-01"
+            "version": "2",
+            "start_date": "2021-06-01"
+        },
+        {
+            "id": 2,
+            "name": "facilities",
+            "short_name": "",
+            "description": "",
+            "version": "3",
+            "start_date": "2021-04-22"
         }
     ]
 
