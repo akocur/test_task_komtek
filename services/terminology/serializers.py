@@ -49,11 +49,11 @@ class GuideItemSerializer(serializers.ModelSerializer):
     def validate(self, data):  # noqa: WPS110
         """Validate code, value."""
         guide_item = GuideItem.objects.get(pk=data['id'])
-        errors = {}
+        errors = []
         fields = ['code', 'value']
         for field in fields:
             if getattr(guide_item, field) != data[field]:
-                errors[field] = 'the value is different'
+                errors.append(f'{field} is incorrect')
         if errors:
-            raise serializers.ValidationError(errors)
+            raise serializers.ValidationError({data['id']: errors})
         return data

@@ -1,5 +1,6 @@
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.http import urlencode
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -204,3 +205,174 @@ class GuideItemListApiViewTests(  # noqa: WPS215
         ]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['results'], expected_data)
+
+
+class GuideItemValidateApiViewTests(  # noqa: WPS215
+    GuideMixin, GuideVersionMixin, GuideItemMixin, APITestCase,
+):
+    """Test GuideItemValidate api."""
+
+    def setUp(self):
+        """Set up."""
+        self.guide1 = self.create_guide(self.default_guide_name)
+        self.pk = self.guide1.id
+        self.last_version_g1 = self.create_last_version(self.guide1)
+        self.current_version_g1 = self.create_current_version(self.guide1)
+        self.future_version_g1 = self.create_future_version(self.guide1)
+        guide2 = self.create_guide('guide2')
+        self.create_current_version(guide2)
+        self.surgeon = self.create_guide_item(code='1', value='surgeon')
+        self.therapist = self.create_guide_item(code='2', value='therapist')
+        self.dentist = self.create_guide_item(code='3', value='dentist')
+        self.last_version_g1.guide_items.add(self.surgeon)
+        self.current_version_g1.guide_items.add(self.surgeon, self.therapist)
+        self.future_version_g1.guide_items.add(self.surgeon, self.dentist)
+        self.url_parametrs = {}
+
+    @property
+    def url(self):
+        """Return url."""
+        path = reverse('guide-item-validate', kwargs={"pk": self.pk})
+        parametrs = urlencode(self.url_parametrs)
+        return f'{path}?{parametrs}' if parametrs else path
+
+    def test_guide_id_dont_exist(self):
+        """Test case guide_id don't exist."""
+        self.pk = 1000000
+        response = self.client.post(self.url, [], pk=self.pk, format='json')
+        expected_data = {f'{self.pk}': 'guide_id does not exist'}
+        self.assertEqual(response.json(), expected_data)
+
+    def test_all_valid_of_current_guide_version(self):
+        """Test case when all valid of current guide version."""
+        post_data = [
+            {
+                'id': self.surgeon.id,
+                'guide_id': self.guide1.id,
+                'code': self.surgeon.code,
+                'value': self.surgeon.value,
+            },
+            {
+                'id': self.therapist.id,
+                'guide_id': self.guide1.id,
+                'code': self.therapist.code,
+                'value': self.therapist.value,
+            },
+        ]
+        response = self.client.post(
+            self.url, post_data, pk=self.pk, format='json',
+        )
+        expected_data = {'all': True}
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
+    def test_all_valid_of_specific_guide_version(self):
+        """Test case when all valid of specific guide version."""
+        post_data = [
+            {
+                'id': self.surgeon.id,
+                'guide_id': self.guide1.id,
+                'code': self.surgeon.code,
+                'value': self.surgeon.value,
+            },
+            {
+                'id': self.dentist.id,
+                'guide_id': self.guide1.id,
+                'code': self.dentist.code,
+                'value': self.dentist.value,
+            },
+        ]
+        self.url_parametrs = {'version': self.future_version_name}
+        response = self.client.post(
+            self.url, post_data, pk=self.pk, format='json',
+        )
+        expected_data = {'all': True}
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
+    def test_few_invalid_of_current_guide_version(self):
+        """Few guide item of curretn guide version is invalid."""
+        post_data = [
+            {
+                'id': self.surgeon.id,
+                'guide_id': self.guide1.id,
+                'code': self.surgeon.code,
+                'value': self.surgeon.value,
+            },
+            {
+                'id': self.dentist.id,
+                'guide_id': self.guide1.id,
+                'code': self.dentist.code,
+                'value': self.dentist.value,
+            },
+        ]
+        self.url_parametrs = {}
+        response = self.client.post(
+            self.url, post_data, pk=self.pk, format='json',
+        )
+        expected_data = [{self.dentist.id: False}]
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, expected_data)
+
+    def test_few_invalid_of_specific_guide_version(self):
+        """
+        Test the case when several guide items of specific guide version
+        are invalid.
+        """
+        post_data = [
+            {
+                'id': self.surgeon.id,
+                'guide_id': self.guide1.id,
+                'code': self.surgeon.code,
+                'value': self.surgeon.value,
+            },
+            {
+                'id': self.therapist.id,
+                'guide_id': self.guide1.id,
+                'code': self.therapist.code,
+                'value': self.therapist.value,
+            },
+        ]
+        self.url_parametrs = {'version': self.future_version_name}
+        response = self.client.post(
+            self.url, post_data, pk=self.pk, format='json',
+        )
+        expected_data = [{self.therapist.id: False}]
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, expected_data)
+
+    def test_incorrect_data_of_guide_items(self):
+        """Test incorrect data of guide items."""
+        post_data = [
+            {
+                'id': self.surgeon.id,
+                'guide_id': self.guide1.id,
+                'code': 'incorrect_code',
+                'value': 'incorrect_value',
+            },
+            {
+                'id': self.therapist.id,
+                'guide_id': self.guide1.id,
+                'code': 'incorrect_code',
+                'value': self.therapist.value,
+            },
+        ]
+        self.url_parametrs = {}
+        response = self.client.post(
+            self.url, post_data, pk=self.pk, format='json',
+        )
+        expected_data = [
+            {
+                self.surgeon.id: [
+                    'code is incorrect',
+                    'value is incorrect',
+                ],
+            },
+            {
+                self.therapist.id: [
+                    'code is incorrect',
+                ],
+            },
+        ]
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, expected_data)

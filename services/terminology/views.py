@@ -89,7 +89,7 @@ class GuideItemValidate(APIView):
         try:
             guide = Guide.objects.get(pk=pk)
         except Guide.DoesNotExist:
-            raise serializers.ValidationError({'guide_id': 'does not exist.'})
+            raise serializers.ValidationError({pk: 'guide_id does not exist'})
 
         serializer = GuideItemSerializer(many=True, data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -111,6 +111,6 @@ class GuideItemValidate(APIView):
         ))
 
         if errors:
-            return Response(errors, status=status.HTTP_200_OK)
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'all': True}, status=status.HTTP_200_OK)
