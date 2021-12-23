@@ -16,6 +16,14 @@
 - element code (type: string, cannot be empty)
 - element value (type: string, cannot be empty)
 
+The service has a GUI of the administrative part, with which you can add new directories, new versions of directories, specify the start date of the action and fill the directories with elements.
+
+The administrative part is available at: `http://<host>/admin/`
+
+# API
+
+The API provides page-by-page output of the result. The data is returned 10 items per page. 
+
 ## The API provides the following methods
 
 - [getting a list of guides](https://github.com/akocur/test_task_komtek#getting-a-list-of-guides)
