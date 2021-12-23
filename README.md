@@ -16,6 +16,14 @@
 - element code (type: string, cannot be empty)
 - element value (type: string, cannot be empty)
 
+The service has a GUI of the administrative part, with which you can add new directories, new versions of directories, specify the start date of the action and fill the directories with elements.
+
+The administrative part is available at: `http://<host>/admin/`
+
+# API
+
+The API provides page-by-page output of the result. The data is returned 10 items per page. 
+
 ## The API provides the following methods
 
 - [getting a list of guides](https://github.com/akocur/test_task_komtek#getting-a-list-of-guides)
@@ -45,48 +53,53 @@
     Content-Type: application/json
     Vary: Accept
 
-    [
-        {
-            "id": 1,
-            "name": "specialties",
-            "short_name": "",
-            "description": "",
-            "version": "1",
-            "start_date": "2021-01-01"
-        },
-        {
-            "id": 1,
-            "name": "specialties",
-            "short_name": "",
-            "description": "",
-            "version": "2",
-            "start_date": "2021-06-01"
-        },
-        {
-            "id": 1,
-            "name": "specialties",
-            "short_name": "",
-            "description": "",
-            "version": "3",
-            "start_date": "2052-06-01"
-        },
-        {
-            "id": 2,
-            "name": "facilities",
-            "short_name": "",
-            "description": "",
-            "version": "3",
-            "start_date": "2021-04-22"
-        },
-        {
-            "id": 2,
-            "name": "facilities",
-            "short_name": "",
-            "description": "",
-            "version": "4",
-            "start_date": "2023-08-23"
-        }
-    ]
+    {
+        "count": 5,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "id": 1,
+                "name": "specialties",
+                "short_name": "",
+                "description": "",
+                "version": "1",
+                "start_date": "2021-01-01"
+            },
+            {
+                "id": 1,
+                "name": "specialties",
+                "short_name": "",
+                "description": "",
+                "version": "2",
+                "start_date": "2021-06-01"
+            },
+            {
+                "id": 1,
+                "name": "specialties",
+                "short_name": "",
+                "description": "",
+                "version": "3",
+                "start_date": "2052-06-01"
+            },
+            {
+                "id": 2,
+                "name": "facilities",
+                "short_name": "",
+                "description": "",
+                "version": "3",
+                "start_date": "2021-04-22"
+            },
+            {
+                "id": 2,
+                "name": "facilities",
+                "short_name": "",
+                "description": "",
+                "version": "4",
+                "start_date": "2023-08-23"
+            }
+        ]
+    }
 
 </details>
 
@@ -113,24 +126,29 @@
     Content-Type: application/json
     Vary: Accept
 
-    [
-        {
-            "id": 1,
-            "name": "specialties",
-            "short_name": "",
-            "description": "",
-            "version": "2",
-            "start_date": "2021-06-01"
-        },
-        {
-            "id": 2,
-            "name": "facilities",
-            "short_name": "",
-            "description": "",
-            "version": "3",
-            "start_date": "2021-04-22"
-        }
-    ]
+    {
+        "count": 2,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "id": 1,
+                "name": "specialties",
+                "short_name": "",
+                "description": "",
+                "version": "2",
+                "start_date": "2021-06-01"
+            },
+            {
+                "id": 2,
+                "name": "facilities",
+                "short_name": "",
+                "description": "",
+                "version": "3",
+                "start_date": "2021-04-22"
+            }
+        ]
+    }
 
 </details>
 
@@ -156,33 +174,37 @@
     Content-Type: application/json
     Vary: Accept
 
-    [
-        {
-            "id": 1,
-            "guide_id": 1,
-            "code": "1",
-            "value": "surgeon"
-        },
-        {
-            "id": 2,
-            "guide_id": 1,
-            "code": "2",
-            "value": "therapist"
-        },
-        {
-            "id": 3,
-            "guide_id": 1,
-            "code": "3",
-            "value": "otolaryngologist"
-        },
-        {
-            "id": 4,
-            "guide_id": 1,
-            "code": "4",
-            "value": "dentist"
-        }
-    ]
-
+    {
+        "count": 4,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "id": 1,
+                "guide_id": 1,
+                "code": "1",
+                "value": "surgeon"
+            },
+            {
+                "id": 2,
+                "guide_id": 1,
+                "code": "2",
+                "value": "therapist"
+            },
+            {
+                "id": 3,
+                "guide_id": 1,
+                "code": "3",
+                "value": "otolaryngologist"
+            },
+            {
+                "id": 4,
+                "guide_id": 1,
+                "code": "4",
+                "value": "dentist"
+            }
+        ]
+    }
 </details>
 
 
@@ -210,27 +232,31 @@
     Content-Type: application/json
     Vary: Accept
 
-    [
-        {
-            "id": 1,
-            "guide_id": 1,
-            "code": "1",
-            "value": "surgeon"
-        },
-        {
-            "id": 2,
-            "guide_id": 1,
-            "code": "2",
-            "value": "therapist"
-        },
-        {
-            "id": 3,
-            "guide_id": 1,
-            "code": "3",
-            "value": "otolaryngologist"
-        }
-    ]
-
+    {
+        "count": 3,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "id": 1,
+                "guide_id": 1,
+                "code": "1",
+                "value": "surgeon"
+            },
+            {
+                "id": 2,
+                "guide_id": 1,
+                "code": "2",
+                "value": "therapist"
+            },
+            {
+                "id": 3,
+                "guide_id": 1,
+                "code": "3",
+                "value": "otolaryngologist"
+            }
+        ]
+    }
 </details>
 
 
