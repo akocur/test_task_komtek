@@ -45,48 +45,53 @@
     Content-Type: application/json
     Vary: Accept
 
-    [
-        {
-            "id": 1,
-            "name": "specialties",
-            "short_name": "",
-            "description": "",
-            "version": "1",
-            "start_date": "2021-01-01"
-        },
-        {
-            "id": 1,
-            "name": "specialties",
-            "short_name": "",
-            "description": "",
-            "version": "2",
-            "start_date": "2021-06-01"
-        },
-        {
-            "id": 1,
-            "name": "specialties",
-            "short_name": "",
-            "description": "",
-            "version": "3",
-            "start_date": "2052-06-01"
-        },
-        {
-            "id": 2,
-            "name": "facilities",
-            "short_name": "",
-            "description": "",
-            "version": "3",
-            "start_date": "2021-04-22"
-        },
-        {
-            "id": 2,
-            "name": "facilities",
-            "short_name": "",
-            "description": "",
-            "version": "4",
-            "start_date": "2023-08-23"
-        }
-    ]
+    {
+        "count": 5,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "id": 1,
+                "name": "specialties",
+                "short_name": "",
+                "description": "",
+                "version": "1",
+                "start_date": "2021-01-01"
+            },
+            {
+                "id": 1,
+                "name": "specialties",
+                "short_name": "",
+                "description": "",
+                "version": "2",
+                "start_date": "2021-06-01"
+            },
+            {
+                "id": 1,
+                "name": "specialties",
+                "short_name": "",
+                "description": "",
+                "version": "3",
+                "start_date": "2052-06-01"
+            },
+            {
+                "id": 2,
+                "name": "facilities",
+                "short_name": "",
+                "description": "",
+                "version": "3",
+                "start_date": "2021-04-22"
+            },
+            {
+                "id": 2,
+                "name": "facilities",
+                "short_name": "",
+                "description": "",
+                "version": "4",
+                "start_date": "2023-08-23"
+            }
+        ]
+    }
 
 </details>
 
@@ -113,24 +118,29 @@
     Content-Type: application/json
     Vary: Accept
 
-    [
-        {
-            "id": 1,
-            "name": "specialties",
-            "short_name": "",
-            "description": "",
-            "version": "2",
-            "start_date": "2021-06-01"
-        },
-        {
-            "id": 2,
-            "name": "facilities",
-            "short_name": "",
-            "description": "",
-            "version": "3",
-            "start_date": "2021-04-22"
-        }
-    ]
+    {
+        "count": 2,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "id": 1,
+                "name": "specialties",
+                "short_name": "",
+                "description": "",
+                "version": "2",
+                "start_date": "2021-06-01"
+            },
+            {
+                "id": 2,
+                "name": "facilities",
+                "short_name": "",
+                "description": "",
+                "version": "3",
+                "start_date": "2021-04-22"
+            }
+        ]
+    }
 
 </details>
 
@@ -156,33 +166,37 @@
     Content-Type: application/json
     Vary: Accept
 
-    [
-        {
-            "id": 1,
-            "guide_id": 1,
-            "code": "1",
-            "value": "surgeon"
-        },
-        {
-            "id": 2,
-            "guide_id": 1,
-            "code": "2",
-            "value": "therapist"
-        },
-        {
-            "id": 3,
-            "guide_id": 1,
-            "code": "3",
-            "value": "otolaryngologist"
-        },
-        {
-            "id": 4,
-            "guide_id": 1,
-            "code": "4",
-            "value": "dentist"
-        }
-    ]
-
+    {
+        "count": 4,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "id": 1,
+                "guide_id": 1,
+                "code": "1",
+                "value": "surgeon"
+            },
+            {
+                "id": 2,
+                "guide_id": 1,
+                "code": "2",
+                "value": "therapist"
+            },
+            {
+                "id": 3,
+                "guide_id": 1,
+                "code": "3",
+                "value": "otolaryngologist"
+            },
+            {
+                "id": 4,
+                "guide_id": 1,
+                "code": "4",
+                "value": "dentist"
+            }
+        ]
+    }
 </details>
 
 
@@ -210,27 +224,31 @@
     Content-Type: application/json
     Vary: Accept
 
-    [
-        {
-            "id": 1,
-            "guide_id": 1,
-            "code": "1",
-            "value": "surgeon"
-        },
-        {
-            "id": 2,
-            "guide_id": 1,
-            "code": "2",
-            "value": "therapist"
-        },
-        {
-            "id": 3,
-            "guide_id": 1,
-            "code": "3",
-            "value": "otolaryngologist"
-        }
-    ]
-
+    {
+        "count": 3,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "id": 1,
+                "guide_id": 1,
+                "code": "1",
+                "value": "surgeon"
+            },
+            {
+                "id": 2,
+                "guide_id": 1,
+                "code": "2",
+                "value": "therapist"
+            },
+            {
+                "id": 3,
+                "guide_id": 1,
+                "code": "3",
+                "value": "otolaryngologist"
+            }
+        ]
+    }
 </details>
 
 
