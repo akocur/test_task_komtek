@@ -16,7 +16,7 @@
 - element code (type: string, cannot be empty)
 - element value (type: string, cannot be empty)
 
-The service has a GUI of the administrative part, with which you can add new directories, new versions of directories, specify the start date of the action and fill the directories with elements.
+The service has a GUI of the administrative part, with which you can add new guides, new versions of guides, specify the start date of the action and fill the guides with elements.
 
 The administrative part is available at: `http://<host>/admin/`
 
